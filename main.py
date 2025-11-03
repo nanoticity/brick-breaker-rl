@@ -22,7 +22,7 @@ def main():
                 run = False
                 
         screen.fill(pg.color.Color("white"))
-        brick_manager.draw_bricks(screen)
+        brick_manager.draw_bricks(screen, ball)
         
         paddle.draw(screen)
         paddle.move()

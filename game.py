@@ -10,8 +10,12 @@ class Brick:
         pg.draw.rect(surface, pg.color.Color("black"), self.rect)
 
     def is_collide(self, ball) -> bool:
-        pass
-    
+        ball_rect = pg.Rect(ball.x - ball.radius, ball.y - ball.radius, ball.radius * 2, ball.radius * 2)
+        is_collide = self.rect.colliderect(ball_rect)
+        if is_collide:
+            ball.y_add *= -1
+        return is_collide
+
 class BrickManager:
     def __init__(self):
         self.bricks = []
@@ -21,10 +25,13 @@ class BrickManager:
             for x in range(10):
                 self.bricks.append(Brick(x*80+2, y*24+2))
     
-    def draw_bricks(self, surface):
+    def draw_bricks(self, surface, ball):
         for brick in self.bricks:
+            if brick.is_collide(ball):
+                self.bricks.remove(brick)
+                continue
             brick.draw(surface)
-            
+
 class Ball:
     def __init__(self, x, y):
         self.x = x
