@@ -79,15 +79,19 @@ class Paddle:
 
     def move(self):
         keys = pg.key.get_pressed()
-        if self.x <= 0:
-            self.x = 0
-        elif self.end_x >= 800:
-            self.x = 700
-            
+        
         if keys[pg.K_LEFT]:
             self.x -= 10
         elif keys[pg.K_RIGHT]:
             self.x += 10
+            
+            
+        if self.x <= 0:
+            self.x = 0
+        if self.end_x >= 800:
+            self.x = 800 - self.width
+            
+        
         self.position_update()
             
     def position_update(self):
