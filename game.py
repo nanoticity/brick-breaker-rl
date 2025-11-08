@@ -40,6 +40,7 @@ class Ball:
         self.y_add = 5
         self.radius = 10
         self.hit = False
+        self.initial_values = (x, y, self.x_add, self.y_add)
 
     def move(self, paddle):
         self.x += self.x_add
@@ -57,18 +58,29 @@ class Ball:
         if not self.hit:
             if self.y >= 760 - self.radius and self.y <= 780 - self.radius:
                 if self.x >= paddle.x and self.x <= paddle.end_x:
+                    distance_from_center = self.x - paddle.middle_x
+                    # Bound distance from center to the range (-89, 89)
+                    distance_from_center = max(-89, min(89, distance_from_center))
+                    self.x_add = distance_from_center / 5
                     self.y_add *= -1
                     self.hit = True
         
         if self.y <= 400:
             self.hit = False
+            
+        if self.y >= 800 + self.radius:
+            self.reset()
+            
+    def reset(self):
+        pg.time.wait(100)
+        self.x = self.initial_values[0]
+        self.y = self.initial_values[1]
+        self.x_add = self.initial_values[2]
+        self.y_add = self.initial_values[3]
 
     def draw(self, surface):
         pg.draw.circle(surface, pg.color.Color("black"), (self.x, self.y), self.radius)
 
-    def reset(self):
-        pass
-    
 class Paddle:
     def __init__(self, x, y):
         self.x = x
@@ -79,24 +91,23 @@ class Paddle:
 
     def move(self):
         keys = pg.key.get_pressed()
-        
         if keys[pg.K_LEFT]:
             self.x -= 10
-        elif keys[pg.K_RIGHT]:
+        if keys[pg.K_RIGHT]:
             self.x += 10
-            
-            
-        if self.x <= 0:
+
+        max_x = 800 - self.width
+        if self.x < 0:
             self.x = 0
-        if self.end_x >= 800:
-            self.x = 800 - self.width
-            
-        
+        elif self.x > max_x:
+            self.x = max_x
+
         self.position_update()
             
     def position_update(self):
         self.middle_x = self.x + self.width / 2
         self.end_x = self.x + self.width
+        print(self.end_x)
 
     def draw(self, surface):
         pg.draw.line(surface, pg.color.Color("black"), (self.x, self.y), (self.end_x, self.y), 20)
